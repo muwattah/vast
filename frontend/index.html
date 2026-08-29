@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Antwerp Property Investor</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="header">
+    <div class="logo">ANTWERP PROPERTY INVESTOR</div>
+    <button id="btn-refresh" class="btn-primary">↻ NU VERNIEUWEN</button>
+  </header>
+
+  <section class="stats" id="stats">
+    <div class="stat-card"><span class="stat-value" id="stat-total">–</span><span class="stat-label">Totaal panden</span></div>
+    <div class="stat-card"><span class="stat-value" id="stat-diy">–</span><span class="stat-label">DIY projecten</span></div>
+    <div class="stat-card"><span class="stat-value" id="stat-high">–</span><span class="stat-label">Score ≥ 8</span></div>
+    <div class="stat-card"><span class="stat-value" id="stat-avg">–</span><span class="stat-label">Gem. €/m²</span></div>
+    <div class="stat-card"><span class="stat-value" id="stat-margin">–</span><span class="stat-label">Hoogste marge</span></div>
+  </section>
+
+  <main class="layout">
+    <aside class="filters">
+      <h3>Filters</h3>
+      <label>Prijs min (€)</label>
+      <input type="number" id="min_price" placeholder="100000" />
+      <label>Prijs max (€)</label>
+      <input type="number" id="max_price" placeholder="400000" />
+      <label>Opp. min (m²)</label>
+      <input type="number" id="min_area" placeholder="50" />
+      <label>Min. Investment Score</label>
+      <input type="number" id="min_score" min="1" max="10" step="0.5" placeholder="6" />
+      <label><input type="checkbox" id="only_renovate" /> Alleen te renoveren</label>
+      <label><input type="checkbox" id="only_diy" /> Alleen hoge DIY</label>
+      <label>Sorteer</label>
+      <select id="sort">
+        <option value="best">Beste investering</option>
+        <option value="diy">Hoogste DIY-score</option>
+        <option value="margin">Hoogste marge</option>
+        <option value="price">Laagste prijs</option>
+        <option value="newest">Nieuwste</option>
+      </select>
+      <button id="btn-apply" class="btn-primary">Toepassen</button>
+      <p class="note">Demo data – live scrapers uitgeschakeld</p>
+    </aside>
+
+    <section class="content">
+      <div id="status-msg" class="status"></div>
+      <table id="prop-table">
+        <thead>
+          <tr>
+            <th>Score</th>
+            <th>Pand</th>
+            <th>Prijs</th>
+            <th>m²</th>
+            <th>€/m²</th>
+            <th>EPC</th>
+            <th>Marge</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="prop-body"></tbody>
+      </table>
+    </section>
+  </main>
+
+  <div id="modal" class="modal hidden">
+    <div class="modal-content">
+      <button class="close" id="modal-close">&times;</button>
+      <div id="modal-body"></div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

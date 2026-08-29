@@ -1,93 +1,84 @@
 # Antwerp Property Investor
 
-**DIY Renovation Investment Platform for Antwerp**
+**Vastgoed Deal Analyzer voor Antwerpen** — vind, waardeer en beoordeel renovatiepanden met focus op DIY-investering.
 
-A full-stack application that helps real-estate investors find, filter and score renovation properties in Antwerp (postcodes 2000–2660) with a focus on projects that can be largely executed as DIY.
+> *Is dit pand interessant om te kopen, hoeveel kan ik maximaal bieden, en hoeveel marge blijft er over als ik zoveel mogelijk zelf renoveer?*
 
-## Important Legal & Technical Notes
-
-- Live scraping of Immoweb, Zimmo, Immovlan and Biddit is **disabled by default**.
-- These sites generally prohibit automated scraping in their Terms of Service and deploy anti-bot measures.
-- The application ships with **clearly marked demo data** based on real market patterns so the full pipeline (database → scoring → API → dashboard) can be demonstrated and developed.
-- To use real data you must obtain permission, use official APIs/partners, or import data manually / via allowed channels.
-- Never put API keys in the frontend.
-
-## Architecture
+## Architectuur
 
 ```
-project/
-├── frontend/          # Dashboard (HTML/JS)
-├── backend/
-│   ├── api/           # FastAPI routers
-│   ├── scraper/       # Modular scrapers (stubs)
-│   ├── ai/            # Scoring & analysis
-│   ├── database/      # SQLAlchemy setup
-│   ├── models/        # Property, Favorite, ...
-│   └── services/      # Seed, demo, ...
-├── .env.example
-├── requirements.txt
-└── README.md
+Imports (JSON/CSV/manual) → Normalisatie → Duplicate check → Database
+     ↓
+Comparables → Valuation engine (ARV) → Financial engine → Deal analysis → Max bid
+     ↓
+AI interpretation (optional) → Dashboard / API
 ```
 
-## Quick Start
+- **Geen live scraping** van Immoweb/Zimmo/Immovlan (disabled stubs).
+- **Geen verzonnen marktdata** — ARV vereist opgeslagen comparables.
+- DEMO-data is altijd duidelijk gemarkeerd.
 
-### 1. Backend
+## Installatie
+
+### Linux / macOS
 
 ```bash
-cd /path/to/vast
-python -m venv venv
-source venv/bin/activate          # Windows: venv\Scripts\activate
+git clone https://github.com/muwattah/vast.git
+cd vast
+python3 -m venv venv
+source venv/bin/activate
 pip install -r requirements.txt
-
 cp .env.example .env
-# Edit .env if you have OPENAI_API_KEY or GROK_API_KEY
-
-# Start API (from project root)
 export PYTHONPATH=.
-uvicorn backend.main:app --reload --host 0.0.0.0 --port 8000
+python3 -m uvicorn backend.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-Open http://localhost:8000/docs for interactive API docs.
-
-### 2. Frontend
+Frontend (andere terminal):
 
 ```bash
-cd frontend
-python -m http.server 3000
+cd frontend && python3 -m http.server 3000
 ```
 
-Open http://localhost:3000
+### Windows
 
-### 3. What you should see
+```cmd
+git clone https://github.com/muwattah/vast.git
+cd vast
+python -m venv venv
+venv\Scripts\activate
+pip install -r requirements.txt
+copy .env.example .env
+set PYTHONPATH=.
+python -m uvicorn backend.main:app --reload --host 0.0.0.0 --port 8000
+```
 
-- Stats bar (total properties, DIY projects, high scores, avg €/m²)
-- Filterable table of properties sorted by Investment Score
-- Detail view with financial breakdown and analysis
-- Favorites endpoints
-- “Nu Vernieuwen” button (reports that live scrapers are disabled)
+### Docker
 
-## API Endpoints
+```bash
+docker compose up --build
+```
 
-| Method | Path | Description |
-|--------|------|-------------|
-| GET | /api/properties | List with filters & sorting |
-| GET | /api/properties/{id} | Detail |
-| GET | /api/stats | Dashboard statistics |
-| GET | /api/favorites | List favorites |
-| POST | /api/favorites/{id} | Add favorite |
-| DELETE | /api/favorites/{id} | Remove favorite |
-| POST | /api/scrape | Trigger refresh (disabled by default) |
+## Tests
 
-## Scoring Logic
+```bash
+export PYTHONPATH=.
+python3 tests/test_core.py
+python3 tests/test_valuation.py
+python3 tests/test_phase4_plus.py
+```
 
-Investment Score (configurable weights):
+## Belangrijke endpoints
 
-- 30% Margin potential
-- 25% Purchase price attractiveness (€/m²)
-- 20% Renovation potential (EPC E/F, “te renoveren” flags)
-- 15% DIY suitability
-- 10% Location
+- GET /api/properties, /api/properties/{id}/deal, /api/deals
+- POST /api/import/json, /api/import/csv, /api/import/comparables
+- POST /api/tools/max-bid, /api/tools/scenario
+- GET /api/tools/compare?ids=1,2
+- GET/POST /api/favorites, /api/saved-searches, /api/notifications
+- GET /api/audit, /health, /docs
 
-## Disclaimer
+## Beperkingen
 
-All cost, value and profit figures are **indicative estimates only**. They do not constitute financial, legal or investment advice.
+- Geen live scraping.
+- DEMO-comparables zijn **geen** echte marktprijzen.
+- ARV zonder echte comparables = onvoldoende gegevens.
+- Aankoopkosten zijn indicatief (geen fiscaal advies).

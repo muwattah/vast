@@ -8,7 +8,7 @@ from contextlib import asynccontextmanager
 import logging
 
 from backend.database.db import init_db, SessionLocal
-from backend.api import properties, scrape, stats, favorites
+from backend.api import properties, scrape, stats, favorites, import_api
 from backend.services.seed import seed_demo_data
 
 logging.basicConfig(level=logging.INFO)
@@ -32,7 +32,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="Antwerp Property Investor API",
     description="API for finding and scoring DIY renovation properties in Antwerp",
-    version="0.1.0",
+    version="0.2.0",
     lifespan=lifespan,
 )
 
@@ -48,6 +48,7 @@ app.include_router(properties.router, prefix="/api", tags=["properties"])
 app.include_router(scrape.router, prefix="/api", tags=["scrape"])
 app.include_router(stats.router, prefix="/api", tags=["stats"])
 app.include_router(favorites.router, prefix="/api", tags=["favorites"])
+app.include_router(import_api.router, prefix="/api", tags=["import"])
 
 
 @app.get("/")
@@ -55,8 +56,9 @@ def root():
     return {
         "app": "Antwerp Property Investor",
         "status": "ok",
+        "version": "0.2.0",
         "docs": "/docs",
-        "note": "Demo data is used by default. Real scrapers are disabled until legally and technically configured.",
+        "note": "Demo data is used by default. Import JSON/CSV or POST /api/properties for real listings. Live scrapers disabled.",
     }
 
 

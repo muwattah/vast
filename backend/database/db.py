@@ -37,6 +37,6 @@ def get_db():
 
 
 def init_db():
-    from backend.models.property import Property, Favorite, SamePropertyGroup  # noqa
+    from backend.models.property import Property, Favorite, SamePropertyGroup, ComparableProperty  # noqa
     Base.metadata.create_all(bind=engine)
     print(f"Database initialized at: {DATABASE_URL}")

@@ -1,1 +1,1 @@
-from .property import Property, SamePropertyGroup, Favorite
+from .property import Property, SamePropertyGroup, Favorite, ComparableProperty

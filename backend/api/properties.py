@@ -129,9 +129,42 @@ def list_properties(
     results = q.offset(offset).limit(limit).all()
     out = []
     for p in results:
-        d = PropertyOut.model_validate(p)
-        d.price_per_m2 = p.price_per_m2()
-        out.append(d)
+        data = {
+            "id": p.id,
+            "source": p.source,
+            "title": p.title,
+            "price": p.price,
+            "postal_code": p.postal_code,
+            "city": p.city,
+            "district": p.district,
+            "property_type": p.property_type,
+            "living_area": p.living_area,
+            "bedrooms": p.bedrooms,
+            "bathrooms": p.bathrooms,
+            "epc_label": p.epc_label,
+            "epc_score": p.epc_score,
+            "is_to_renovate": bool(p.is_to_renovate),
+            "is_fully_to_renovate": bool(p.is_fully_to_renovate),
+            "is_investment": bool(p.is_investment),
+            "investment_score": p.investment_score,
+            "diy_score": p.diy_score,
+            "margin_score": p.margin_score,
+            "estimated_profit_min": p.estimated_profit_min,
+            "estimated_profit_max": p.estimated_profit_max,
+            "estimated_roi_min": p.estimated_roi_min,
+            "estimated_roi_max": p.estimated_roi_max,
+            "estimated_renovation_cost_min": p.estimated_renovation_cost_min,
+            "estimated_renovation_cost_max": p.estimated_renovation_cost_max,
+            "estimated_after_renovation_value_min": p.estimated_after_renovation_value_min,
+            "estimated_after_renovation_value_max": p.estimated_after_renovation_value_max,
+            "renovation_level": p.renovation_level,
+            "ai_summary": p.ai_summary,
+            "first_seen": p.first_seen,
+            "last_seen": p.last_seen,
+            "url": p.url,
+            "price_per_m2": p.price_per_m2(),
+        }
+        out.append(PropertyOut(**data))
     return out
 
 
@@ -140,6 +173,32 @@ def get_property(property_id: int, db: Session = Depends(get_db)):
     p = db.query(Property).filter(Property.id == property_id).first()
     if not p:
         raise HTTPException(status_code=404, detail="Property not found")
-    d = PropertyDetail.model_validate(p)
-    d.price_per_m2 = p.price_per_m2()
-    return d
+    data = {
+        "id": p.id, "source": p.source, "title": p.title, "price": p.price,
+        "postal_code": p.postal_code, "city": p.city, "district": p.district,
+        "property_type": p.property_type, "living_area": p.living_area,
+        "bedrooms": p.bedrooms, "bathrooms": p.bathrooms,
+        "epc_label": p.epc_label, "epc_score": p.epc_score,
+        "is_to_renovate": bool(p.is_to_renovate),
+        "is_fully_to_renovate": bool(p.is_fully_to_renovate),
+        "is_investment": bool(p.is_investment),
+        "investment_score": p.investment_score, "diy_score": p.diy_score,
+        "margin_score": p.margin_score,
+        "estimated_profit_min": p.estimated_profit_min,
+        "estimated_profit_max": p.estimated_profit_max,
+        "estimated_roi_min": p.estimated_roi_min, "estimated_roi_max": p.estimated_roi_max,
+        "estimated_renovation_cost_min": p.estimated_renovation_cost_min,
+        "estimated_renovation_cost_max": p.estimated_renovation_cost_max,
+        "estimated_after_renovation_value_min": p.estimated_after_renovation_value_min,
+        "estimated_after_renovation_value_max": p.estimated_after_renovation_value_max,
+        "renovation_level": p.renovation_level, "ai_summary": p.ai_summary,
+        "first_seen": p.first_seen, "last_seen": p.last_seen, "url": p.url,
+        "price_per_m2": p.price_per_m2(),
+        "address": p.address, "description": p.description, "images": p.images,
+        "features": p.features, "year_built": p.year_built,
+        "ai_opportunities": p.ai_opportunities, "ai_risks": p.ai_risks,
+        "diy_tasks": p.diy_tasks, "professional_tasks": p.professional_tasks,
+        "price_score": p.price_score, "renovation_score": p.renovation_score,
+        "location_score": p.location_score, "risk_score": p.risk_score,
+    }
+    return PropertyDetail(**data)

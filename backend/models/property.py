@@ -16,12 +16,10 @@ class Property(Base):
 
     id = Column(Integer, primary_key=True, index=True)
 
-    # Source identity
     source = Column(String(50), nullable=False, index=True)
     source_listing_id = Column(String(100), nullable=True, index=True)
     url = Column(String(500), nullable=False)
 
-    # Basic info
     title = Column(String(300), nullable=False)
     price = Column(Float, nullable=True, index=True)
     address = Column(String(300), nullable=True)
@@ -36,7 +34,6 @@ class Property(Base):
     bathrooms = Column(Integer, nullable=True)
     year_built = Column(Integer, nullable=True)
 
-    # Energy
     epc_label = Column(String(5), nullable=True, index=True)
     epc_score = Column(Float, nullable=True)
     epc_date = Column(String(30), nullable=True)
@@ -45,7 +42,6 @@ class Property(Base):
     images = Column(JSON, nullable=True)
     features = Column(JSON, nullable=True)
 
-    # Status flags
     is_to_renovate = Column(Boolean, default=False, index=True)
     is_fully_to_renovate = Column(Boolean, default=False)
     is_to_modernize = Column(Boolean, default=False)
@@ -54,12 +50,19 @@ class Property(Base):
     is_investment = Column(Boolean, default=False)
     is_active = Column(Boolean, default=True, index=True)
 
-    # Timestamps
     first_seen = Column(DateTime, default=datetime.utcnow)
     last_seen = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     content_hash = Column(String(64), nullable=True)
 
-    # AI scores (1-10)
+    ai_analyzed_at = Column(DateTime, nullable=True)
+    ai_model = Column(String(80), nullable=True)
+    ai_prompt_version = Column(String(20), nullable=True)
+
+    estimated_acquisition_cost_min = Column(Float, nullable=True)
+    estimated_acquisition_cost_max = Column(Float, nullable=True)
+    estimated_total_investment_min = Column(Float, nullable=True)
+    estimated_total_investment_max = Column(Float, nullable=True)
+
     diy_score = Column(Float, nullable=True, index=True)
     renovation_score = Column(Float, nullable=True)
     price_score = Column(Float, nullable=True)
@@ -68,7 +71,6 @@ class Property(Base):
     risk_score = Column(Float, nullable=True)
     investment_score = Column(Float, nullable=True, index=True)
 
-    # Cost & value estimates
     estimated_renovation_cost_min = Column(Float, nullable=True)
     estimated_renovation_cost_max = Column(Float, nullable=True)
     estimated_after_renovation_value_min = Column(Float, nullable=True)
@@ -79,14 +81,12 @@ class Property(Base):
     estimated_roi_max = Column(Float, nullable=True)
     renovation_level = Column(String(30), nullable=True)
 
-    # AI text
     ai_summary = Column(Text, nullable=True)
     ai_opportunities = Column(JSON, nullable=True)
     ai_risks = Column(JSON, nullable=True)
     diy_tasks = Column(JSON, nullable=True)
     professional_tasks = Column(JSON, nullable=True)
 
-    # Duplicate grouping
     same_property_group_id = Column(Integer, ForeignKey("same_property_groups.id"), nullable=True)
 
     __table_args__ = (
@@ -102,22 +102,17 @@ class Property(Base):
 
 
 class SamePropertyGroup(Base):
-    """Groups listings that refer to the same physical property across sources."""
     __tablename__ = "same_property_groups"
-
     id = Column(Integer, primary_key=True)
     canonical_title = Column(String(300), nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
-
     properties = relationship("Property", backref="same_group")
 
 
 class Favorite(Base):
     __tablename__ = "favorites"
-
     id = Column(Integer, primary_key=True)
     property_id = Column(Integer, ForeignKey("properties.id"), nullable=False, unique=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     notes = Column(Text, nullable=True)
-
     property = relationship("Property")

@@ -2,76 +2,88 @@
 <html lang="nl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Antwerp Property Investor</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <header class="header">
-    <div class="logo">ANTWERP PROPERTY INVESTOR</div>
-    <button id="btn-refresh" class="btn-primary">↻ NU VERNIEUWEN</button>
-  </header>
-
-  <section class="stats" id="stats">
-    <div class="stat-card"><span class="stat-value" id="stat-total">–</span><span class="stat-label">Totaal panden</span></div>
-    <div class="stat-card"><span class="stat-value" id="stat-diy">–</span><span class="stat-label">DIY projecten</span></div>
-    <div class="stat-card"><span class="stat-value" id="stat-high">–</span><span class="stat-label">Score ≥ 8</span></div>
-    <div class="stat-card"><span class="stat-value" id="stat-avg">–</span><span class="stat-label">Gem. €/m²</span></div>
-    <div class="stat-card"><span class="stat-value" id="stat-margin">–</span><span class="stat-label">Hoogste marge</span></div>
-  </section>
-
-  <main class="layout">
-    <aside class="filters">
-      <h3>Filters</h3>
-      <label>Prijs min (€)</label>
-      <input type="number" id="min_price" placeholder="100000" />
-      <label>Prijs max (€)</label>
-      <input type="number" id="max_price" placeholder="400000" />
-      <label>Opp. min (m²)</label>
-      <input type="number" id="min_area" placeholder="50" />
-      <label>Min. Investment Score</label>
-      <input type="number" id="min_score" min="1" max="10" step="0.5" placeholder="6" />
-      <label><input type="checkbox" id="only_renovate" /> Alleen te renoveren</label>
-      <label><input type="checkbox" id="only_diy" /> Alleen hoge DIY</label>
-      <label>Sorteer</label>
-      <select id="sort">
-        <option value="best">Beste investering</option>
-        <option value="diy">Hoogste DIY-score</option>
-        <option value="margin">Hoogste marge</option>
-        <option value="price">Laagste prijs</option>
-        <option value="newest">Nieuwste</option>
-      </select>
-      <button id="btn-apply" class="btn-primary">Toepassen</button>
-      <p class="note">Demo data – live scrapers uitgeschakeld</p>
-    </aside>
-
-    <section class="content">
-      <div id="status-msg" class="status"></div>
-      <table id="prop-table">
-        <thead>
-          <tr>
-            <th>Score</th>
-            <th>Pand</th>
-            <th>Prijs</th>
-            <th>m²</th>
-            <th>€/m²</th>
-            <th>EPC</th>
-            <th>Marge</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody id="prop-body"></tbody>
-      </table>
+  <nav class="nav">
+    <div class="nav-brand">Antwerp Investor</div>
+    <div class="nav-links">
+      <button class="nav-btn active" data-page="dashboard">Dashboard</button>
+      <button class="nav-btn" data-page="properties">Properties</button>
+      <button class="nav-btn" data-page="deals">Deals</button>
+      <button class="nav-btn" data-page="market">Comparables</button>
+      <button class="nav-btn" data-page="import">Import</button>
+      <button class="nav-btn" data-page="favorites">Favorites</button>
+      <button class="nav-btn" data-page="notifications">🔔</button>
+    </div>
+  </nav>
+  <main class="container">
+    <section id="page-dashboard" class="page active">
+      <h1>Dashboard</h1>
+      <div class="stats" id="stats">
+        <div class="stat"><div class="num" id="stat-total">–</div><div class="lbl">Properties</div></div>
+        <div class="stat"><div class="num" id="stat-diy">–</div><div class="lbl">DIY projects</div></div>
+        <div class="stat"><div class="num" id="stat-strong">–</div><div class="lbl">Strong deals</div></div>
+        <div class="stat"><div class="num" id="stat-potential">–</div><div class="lbl">Potential</div></div>
+        <div class="stat"><div class="num" id="stat-avg">–</div><div class="lbl">Avg EUR/m2</div></div>
+      </div>
+      <div id="notif-bar" class="notif-bar"></div>
+      <h2>Top deals</h2>
+      <div id="top-deals" class="card-list">Loading…</div>
+    </section>
+    <section id="page-properties" class="page">
+      <h1>Properties</h1>
+      <div class="filters">
+        <label>Source<select id="source"><option value="">All</option><option value="demo">Demo</option><option value="import">Import</option><option value="manual">Manual</option></select></label>
+        <label>Sort<select id="sort"><option value="best">Best score</option><option value="price_asc">Price up</option><option value="price_desc">Price down</option><option value="diy">DIY score</option></select></label>
+        <button id="btn-refresh" class="btn">Refresh</button>
+      </div>
+      <div id="property-table"></div>
+    </section>
+    <section id="page-deals" class="page"><h1>Deals</h1><div id="deals-list">Loading…</div></section>
+    <section id="page-market" class="page">
+      <h1>Market Data</h1>
+      <p class="muted">DEMO comparables are quality=LOW and are not real market prices.</p>
+      <div class="filters">
+        <label>Postcode <input id="m-pc" placeholder="2060" /></label>
+        <label>Type <select id="m-type"><option value="">All</option><option value="huis">huis</option><option value="appartement">appartement</option></select></label>
+        <button id="btn-market" class="btn">Filter</button>
+      </div>
+      <div id="market-summary" class="muted"></div>
+      <div id="market-table"></div>
+    </section>
+    <section id="page-import" class="page">
+      <h1>Import Center</h1>
+      <div class="import-grid">
+        <div class="import-card">
+          <h3>Import properties</h3>
+          <input type="file" id="imp-prop-file" accept=".csv,.json" />
+          <button class="btn" id="btn-preview-prop">Preview</button>
+          <button class="btn btn-primary" id="btn-confirm-prop" disabled>Confirm import</button>
+        </div>
+        <div class="import-card">
+          <h3>Import comparables</h3>
+          <input type="file" id="imp-comp-file" accept=".json" />
+          <button class="btn" id="btn-import-comp">Import JSON</button>
+        </div>
+      </div>
+      <pre id="import-result" class="import-result"></pre>
+    </section>
+    <section id="page-favorites" class="page"><h1>Favorites</h1><div id="favorites-list">Loading…</div></section>
+    <section id="page-notifications" class="page">
+      <h1>Notifications</h1>
+      <button class="btn" id="btn-check-notif">Check saved searches</button>
+      <div id="notifications-list"></div>
     </section>
   </main>
-
-  <div id="modal" class="modal hidden">
+  <div id="detail-modal" class="modal hidden">
     <div class="modal-content">
-      <button class="close" id="modal-close">&times;</button>
-      <div id="modal-body"></div>
+      <button class="modal-close" id="modal-close">×</button>
+      <div id="detail-body"></div>
     </div>
   </div>
-
   <script src="app.js"></script>
 </body>
 </html>

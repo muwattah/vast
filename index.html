@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Antwerp Property Investor</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+  <div id="vast-pages-banner" style="background:#1e293b;color:#e2e8f0;padding:0.6rem 1rem;font-size:0.85rem;display:flex;flex-wrap:wrap;gap:0.75rem;align-items:center;justify-content:space-between;">
+    <span><strong>Vast</strong> — Antwerp investor dashboard. Backend lokaal op <code>localhost:8000</code> (Pages host alleen UI).</span>
+    <span style="display:flex;gap:0.5rem;align-items:center;">
+      <label>API <input id="api-base-input" type="text" value="http://127.0.0.1:8000/api" style="width:220px;padding:0.2rem 0.4rem;border-radius:4px;border:1px solid #475569;background:#0f172a;color:#f8fafc;" /></label>
+      <button type="button" id="api-base-save" style="padding:0.25rem 0.6rem;border-radius:4px;border:none;background:#38bdf8;color:#0f172a;font-weight:600;cursor:pointer;">Opslaan</button>
+    </span>
+  </div>
+  <header class="nav">
+    <div class="brand">Vast <span>Antwerpen</span></div>
+    <nav class="nav-links">
+      <button class="nav-btn active" data-page="dashboard">Dashboard</button>
+      <button class="nav-btn" data-page="properties">Properties</button>
+      <button class="nav-btn" data-page="deals">Deals</button>
+      <button class="nav-btn" data-page="import">Import</button>
+      <button class="nav-btn" data-page="map">Map</button>
+      <button class="nav-btn" data-page="sources">Sources</button>
+    </nav>
+  </header>
+  <main class="container">
+    <section id="page-dashboard" class="page active">
+      <h1>Dashboard</h1>
+      <p class="muted">Start de API lokaal, laad Heylen/Walls data, dan verschijnen hier deals.</p>
+      <div class="stats" id="dash-stats"></div>
+      <h2>Top deals</h2>
+      <div id="dash-deals" class="cards"></div>
+      <h2>Snelstart</h2>
+      <pre class="code-block">curl -X POST http://127.0.0.1:8000/api/sources/heylen/run?limit=600
+curl -X POST http://127.0.0.1:8000/api/sources/walls/run?limit=150
+curl http://127.0.0.1:8000/api/properties?exclude_demo=true&amp;limit=20</pre>
+    </section>
+    <section id="page-properties" class="page">
+      <h1>Properties</h1>
+      <div class="filters">
+        <label><input type="checkbox" id="exclude-demo" checked /> Exclude DEMO</label>
+        <button class="btn" id="btn-load-props">Laden</button>
+      </div>
+      <div id="props-table"></div>
+    </section>
+    <section id="page-deals" class="page">
+      <h1>Deals</h1>
+      <div id="deals-list" class="cards"></div>
+    </section>
+    <section id="page-import" class="page">
+      <h1>Import Center</h1>
+      <p class="muted">CSV/JSON via API. Live: Heylen &amp; Walls connectors.</p>
+      <button class="btn btn-primary" id="btn-run-heylen">Run Heylen</button>
+      <button class="btn" id="btn-run-walls">Run Walls</button>
+      <pre id="import-log" class="code-block"></pre>
+    </section>
+    <section id="page-map" class="page">
+      <h1>Map</h1>
+      <div id="map" style="height:420px;border-radius:8px;border:1px solid #334155"></div>
+    </section>
+    <section id="page-sources" class="page">
+      <h1>Data sources</h1>
+      <div id="sources-table"></div>
+    </section>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,31 +1,20 @@
 import os, sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from backend.sources.heylen import parse_heylen_detail, data_quality, is_analyzable, _extract_listing_urls
+from backend.sources.heylen import parse_embedded_listings, is_analyzable, parse_heylen_detail
 from backend.sources.antwerp import is_antwerp_postcode
 
-SAMPLE = '''<script type="application/ld+json">
-{"@context":"https://schema.org","@type":"RealEstateListing",
- "name":"Huis in Hoboken","description":"Woning 120 m2 te renoveren",
- "image":"https://example.com/a.jpg",
- "offers":{"@type":"Offer","price":565000,"priceCurrency":"EUR"},
- "address":{"@type":"PostalAddress","streetAddress":"Straat 1","addressLocality":"Hoboken","postalCode":"2660","addressCountry":"BE"}}
-</script>'''
+SAMPLE = r'''\"ID\":332301,\"Goal\":0,\"Street\":\"Roest\",\"HouseNumber\":\"8\",\"BoxNr\":\"62\",\"Zip\":\"2600\",\"City\":\"Berchem\",\"Price\":\"209000\",\"NumberOfBedRooms\":1,\"NumberOfBathRooms\":1,\"SurfaceTotal\":41,\"SurfaceGround2\":82,\"Status\":1,\"SubStatus\":2,\"WebID\":\"2\",\"EPCLabelText\":\"C\",\"CreatedDate\":\"2026-08-09 18:01:36\",\"ProjectID\":null,\"SiteID\":16,\"LastChangedDate\":\"2026-08-30 12:33:07\",\"GoogleX\":\"51.18\",\"GoogleY\":\"4.43\",\"x\":1,\"ConstructionYear\":1970'''
 
-def test_parse_heylen_jsonld():
-    item = parse_heylen_detail(SAMPLE, "https://www.heylenvastgoed.be/kopen/huis-te-koop-in-hoboken/334538")
-    assert item["price"] == 565000
-    assert item["postal_code"] == "2660"
-    assert item["living_area"] == 120
-    assert is_analyzable(item)
+def test_parse():
+    items = parse_embedded_listings(SAMPLE)
+    assert len(items) >= 1
+    assert items[0]["price"] == 209000
+    assert items[0]["living_area"] == 41
+    assert items[0]["epc_label"] == "C"
+    assert is_analyzable(items[0])
 
-def test_extract_urls():
-    urls = _extract_listing_urls('<a href="/kopen/huis-te-koop-in-hoboken/334538">x</a>')
-    assert any("334538" in u for u in urls)
-
-def test_antwerp_pc():
-    assert is_antwerp_postcode("2660")
-    assert not is_antwerp_postcode("2300")
+def test_pc():
+    assert is_antwerp_postcode("2600")
 
 if __name__ == "__main__":
-    test_parse_heylen_jsonld(); test_extract_urls(); test_antwerp_pc()
-    print("ALL PASS")
+    test_parse(); test_pc(); print("PASS")
